@@ -1,4 +1,4 @@
-# QuantumChess
+# QuantumChess(under development)
 
 Quantum Chess is a game of Checkers demonstrating effects of quantum physics like entanglement, interference and superposition. It is also possible to get a Schrodinger's Cat like situation in the game. The game just doesn't use "randomness" as a special effect(which isn't completely quantum), it is a quantum circuit behaving like a game of chess.
  
