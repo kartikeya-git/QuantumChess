@@ -14,6 +14,10 @@
 		{
 			"Name": "EditorScriptingUtilities",
 			"Enabled": true
+		},
+		{
+			"Name": "HoudiniEngine",
+			"Enabled": false
 		}
 	],
 	"TargetPlatforms": [
@@ -21,6 +25,7 @@
 		"LinuxNoEditor",
 		"WindowsNoEditor",
 		"HTML5",
-		"MacNoEditor"
+		"MacNoEditor",
+		"Android"
 	]
 }
