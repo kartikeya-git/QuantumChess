@@ -23,8 +23,8 @@ backend_opts_mps = {'method': 'matrix_product_state'}
 sqrt2i = 1/(np.sqrt(2))
 
 iswap_op = Operator([[1, 0, 0, 0],
-                     [0, 0, 1j, 0],
-                     [0, 1j, 0, 0],
+                     [0, 0, 1, 0],
+                     [0, 1, 0, 0],
                      [0, 0, 0, 1]])
 
 sqrt_iswap_op = Operator([[1, 0, 0, 0],
@@ -118,14 +118,17 @@ def measurement(qubit):
 
 def standard_move(s,t):
     
-    #circ.swap(s, t)
-    circ.unitary(iswap_op, [s, t], label='iswap')
+    circ.swap(s, t)
+    #circ.unitary(iswap_op, [s, t], label='iswap')
 
 
 
 def quantum_move(s,t):
     
-    circ.unitary(sqrt_iswap_op, [s, t], label='sqrt_iswap') 
+    #circ.unitary(sqrt_iswap_op, [s, t], label='sqrt_iswap') 
+    circ.cx(s,t)
+    circ.h(s)
+    circ.cx(s,t)
     
     source = superposition_dict[str(s)]
     if t not in source:
@@ -165,14 +168,15 @@ def slide(s,t,P, ancilla = 64):
         circ.cx(i, ancilla)
     
     circ.cx(t, s)
-    #circ.ccx(ancilla, s, t)
-    toff(ancilla, s, t)
+    circ.ccx(ancilla, s, t)
+    #toff(ancilla, s, t)
     circ.cx(t, s)
 
     circ.reset(ancilla)
     circ.x(ancilla)
     
     if len(P)!= 0:
+        
         source = superposition_dict[str(s)]
         if t not in source:
             superposition_dict[str(s)].append(t)
@@ -183,19 +187,42 @@ def slide(s,t,P, ancilla = 64):
 
         superposition_dict[str(s)] = merged
         superposition_dict[str(t)] = merged
+        
     
 
         for i in P:
+            
             source = entanglement_dict[str(s)]
+            i_sup = superposition_dict[str(i)]
             if i not in source:
                 entanglement_dict[str(s)].append(i)
+                for k in i_sup:
+                    entanglement_dict[str(s)].append(k)
+
             target = entanglement_dict[str(t)]
             if i not in target:
                 entanglement_dict[str(t)].append(i)
+                for k in i_sup:
+                    entanglement_dict[str(t)].append(k)
+
             mergedq = list(set(entanglement_dict[str(s)]) | set(entanglement_dict[str(t)]))
 
             entanglement_dict[str(s)] = mergedq
-            entanglement_dict[str(t)] = mergedq  
+            entanglement_dict[str(t)] = mergedq
+        
+            for k in superposition_dict[str(s)]:
+                if k not in entanglement_dict[str(i)]:
+                    entanglement_dict[str(i)].append(k)
+            
+            for k in superposition_dict[str(t)]:
+                if k not in entanglement_dict[str(i)]:
+                    entanglement_dict[str(i)].append(k)
+
+            for k in superposition_dict[str(i)]:
+                if s not in entanglement_dict[str(k)]:
+                    entanglement_dict[str(k)].append(s)
+                if t not in entanglement_dict[str(k)]:
+                    entanglement_dict[str(k)].append(t) 
 
 
 num_qubits = 65
